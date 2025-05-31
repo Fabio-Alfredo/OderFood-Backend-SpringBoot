@@ -8,6 +8,5 @@ public interface UserService {
     User findByEmail(String email);
 
     Token registerToken(User user);
-    Boolean isTokenValid(User user, String token);
     void cleanTokens(User user);
 }
