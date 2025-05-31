@@ -1,19 +1,21 @@
 package com.food.authservice.utils;
 
+import com.food.authservice.domains.dtos.UserTokenDto;
 import com.food.authservice.domains.models.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
-public class JwtFilterTools {
+public class JwtTools {
     @Value("${jwt.secret}")
     private String secret;
     @Value("${jwt.expiration}")
@@ -58,6 +60,24 @@ public class JwtFilterTools {
                     .getPayload()
                     .getSubject();
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public UserTokenDto getUserFromToken(String token){
+        try{
+            JwtParser parser = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .build();
+
+            Claims claims = parser.parseSignedClaims(token).getPayload();
+            UserTokenDto userTokenDto = new UserTokenDto();
+            userTokenDto.setEmail(claims.get("email", String.class));
+            userTokenDto.setUsername(claims.get("username", String.class));
+            userTokenDto.setId(UUID.fromString(claims.get("id", String.class)));
+
+            return userTokenDto;
+        }catch (Exception e) {
             return null;
         }
     }
