@@ -1,4 +1,4 @@
-package com.food.authservice.domains.dtos;
+package com.food.authservice.domains.dtos.user;
 
 import lombok.Data;
 

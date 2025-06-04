@@ -1,6 +1,6 @@
 package com.food.authservice.utils;
 
-import com.food.authservice.domains.dtos.UserTokenDto;
+import com.food.authservice.domains.dtos.user.UserTokenDto;
 import com.food.authservice.services.contract.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

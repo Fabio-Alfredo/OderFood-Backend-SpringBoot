@@ -1,8 +1,10 @@
 package com.food.authservice.controller;
 
 import com.food.authservice.domains.dtos.GeneralResponse;
-import com.food.authservice.domains.dtos.RegisterDto;
-import com.food.authservice.domains.models.User;
+import com.food.authservice.domains.dtos.token.TokenDto;
+import com.food.authservice.domains.dtos.user.LoginDto;
+import com.food.authservice.domains.dtos.user.RegisterDto;
+import com.food.authservice.domains.models.Token;
 import com.food.authservice.exceptions.HttpError;
 import com.food.authservice.services.contract.UserService;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,16 @@ public class AuthController {
         try{
             userService.registerUser(registerDto);
             return GeneralResponse.getResponse(HttpStatus.ACCEPTED, "User registered successfully");
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @PostMapping("/login")
+    public  ResponseEntity<GeneralResponse>loginUser(@RequestBody LoginDto loginDto) {
+        try{
+            Token token = userService.loginUser(loginDto);
+            return GeneralResponse.getResponse(HttpStatus.OK, "User logged in successfully", new TokenDto(token));
         }catch (HttpError e){
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }

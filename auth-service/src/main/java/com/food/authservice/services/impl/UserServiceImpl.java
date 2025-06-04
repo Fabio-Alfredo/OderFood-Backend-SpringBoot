@@ -1,6 +1,7 @@
 package com.food.authservice.services.impl;
 
-import com.food.authservice.domains.dtos.RegisterDto;
+import com.food.authservice.domains.dtos.user.LoginDto;
+import com.food.authservice.domains.dtos.user.RegisterDto;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
 import com.food.authservice.exceptions.HttpError;
@@ -74,11 +75,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Token loginUser(LoginDto loginDto) {
+        try{
+            User user = userRepository.findByEmailOrUsername(loginDto.getIdentifier(), loginDto.getIdentifier());
+            if(user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+                throw new HttpError(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+            }
+            Token token = registerToken(user);
+
+            return token;
+        }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
     public Token registerToken(User user) {
         try{
             cleanTokens(user);
             //generar token
             String tokenString = jwtTools.generateToken(user);
+
             Token token = new Token(user, tokenString);
 
             return tokenRepository.save(token);
