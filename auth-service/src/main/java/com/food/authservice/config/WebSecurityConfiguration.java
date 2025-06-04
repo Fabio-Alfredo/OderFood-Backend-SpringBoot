@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -34,7 +35,7 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    AuthenticationManagerBuilder authenticationManagerBuilder (HttpSecurity httpSecurity)throws  Exception{
+    AuthenticationManager authenticationManager (HttpSecurity httpSecurity)throws  Exception{
         AuthenticationManagerBuilder authentication = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
 
         authentication.userDetailsService(identifier ->{
@@ -45,7 +46,7 @@ public class WebSecurityConfiguration {
             return  user;
         })
                 .passwordEncoder(passwordEncoder);
-        return authentication;
+        return authentication.build();
     }
 
     @Bean
@@ -53,19 +54,19 @@ public class WebSecurityConfiguration {
         httpSecurity.httpBasic(withDefaults()).csrf(csrf-> csrf.disable());
 
         httpSecurity.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
         );
 
         httpSecurity.sessionManagement(management->management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        httpSecurity.exceptionHandling(handilg -> handilg.authenticationEntryPoint((req, res, ex)->{
+        httpSecurity.exceptionHandling(handling -> handling.authenticationEntryPoint((req, res, ex)->{
             res.sendError(
                     HttpServletResponse.SC_UNAUTHORIZED,
                     "Unauthorized: " + ex.getMessage()
             );
         }));
-        httpSecurity.addFilter(jwtFilterTools);
+        httpSecurity.addFilterBefore(jwtFilterTools, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 }

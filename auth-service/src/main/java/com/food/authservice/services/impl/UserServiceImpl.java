@@ -1,5 +1,6 @@
 package com.food.authservice.services.impl;
 
+import com.food.authservice.domains.dtos.RegisterDto;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
 import com.food.authservice.exceptions.HttpError;
@@ -8,6 +9,7 @@ import com.food.authservice.repositorie.UserRepository;
 import com.food.authservice.services.contract.UserService;
 import com.food.authservice.utils.JwtTools;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,11 +20,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final JwtTools jwtTools;
     private final TokenRepository tokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, JwtTools jwtTools, TokenRepository tokenRepository) {
+    public UserServiceImpl(UserRepository userRepository, JwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.jwtTools = jwtTools;
         this.tokenRepository = tokenRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -47,6 +51,24 @@ public class UserServiceImpl implements UserService {
             }
             return user;
         } catch (HttpError e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public User registerUser(RegisterDto registerDto) {
+        try{
+            User user = userRepository.findByEmailOrUsername(registerDto.getEmail(), registerDto.getUsername());
+            if(user != null){
+                throw new HttpError(HttpStatus.BAD_REQUEST, "User already exists with email or username: " + registerDto.getEmail() + ", " + registerDto.getUsername());
+            }
+            user = new User();
+            user.setEmail(registerDto.getEmail());
+            user.setUsername(registerDto.getUsername());
+            user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+
+            return userRepository.save(user);
+        }catch (HttpError e) {
             throw e;
         }
     }
