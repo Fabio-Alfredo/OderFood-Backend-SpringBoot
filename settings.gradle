@@ -1,3 +1,4 @@
 rootProject.name = 'OrderFoot'
 
-include 'auth-service'
+include('auth-service')
+include('menu-service')
