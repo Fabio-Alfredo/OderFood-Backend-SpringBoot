@@ -2,6 +2,7 @@ package com.food.menuservice.domain.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.UUID;
@@ -14,12 +15,10 @@ public class Dish {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @NotEmpty(message = "Name cannot be empty")
     private String name;
     private String description;
-    @NotEmpty(message = "Category cannot be empty")
+    @NotNull(message = "Price cannot be null")
     private Double price;
-    @Column(columnDefinition = "boolean default true")
-    private Boolean available;
+    private Boolean available = true;
 }

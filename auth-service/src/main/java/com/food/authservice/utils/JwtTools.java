@@ -71,6 +71,7 @@ public class JwtTools {
                     .build();
 
             Claims claims = parser.parseSignedClaims(token).getPayload();
+            System.out.println(claims + " claims");
             UserTokenDto userTokenDto = new UserTokenDto();
             userTokenDto.setEmail(claims.get("email", String.class));
             userTokenDto.setUsername(claims.get("username", String.class));

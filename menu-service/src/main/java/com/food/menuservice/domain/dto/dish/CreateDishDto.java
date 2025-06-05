@@ -1,6 +1,7 @@
 package com.food.menuservice.domain.dto.dish;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -9,6 +10,6 @@ public class CreateDishDto {
     private String name;
     @NotEmpty(message = "Description cannot be empty")
     private String description;
-    @NotEmpty(message = "Category cannot be empty")
+    @NotNull(message = "Price cannot be null")
     private Double price;
 }
