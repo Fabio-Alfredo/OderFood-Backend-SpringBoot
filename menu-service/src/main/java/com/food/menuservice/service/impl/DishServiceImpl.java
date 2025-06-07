@@ -43,11 +43,37 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public List<Dish> findAllDish() {
-        return List.of();
+        try{
+            List<Dish>dishes =dishRepository.findAll();
+
+            return  dishes;
+        }catch (HttpError e){
+            throw e;
+        }
     }
 
     @Override
     public Dish findDishById(UUID id) {
-        return null;
+        try{
+            Dish dish = dishRepository.findById(id).orElse(null);
+            if(dish == null)
+                throw  new HttpError(HttpStatus.NOT_FOUND, "Dish not exist");
+            return dish;
+        }catch (HttpError e){
+            throw  e;
+        }
+    }
+
+    @Override
+    public List<Dish> findAllByIds(List<UUID> ids) {
+        try{
+            List<Dish>dishes = dishRepository.findAllById(ids);
+            if(dishes.size() != ids.size())
+                throw  new HttpError(HttpStatus.NOT_FOUND, "Some dishes are not available");
+
+            return dishes;
+        }catch (HttpError e){
+            throw e;
+        }
     }
 }

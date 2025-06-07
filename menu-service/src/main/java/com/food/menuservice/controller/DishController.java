@@ -6,12 +6,13 @@ import com.food.menuservice.domain.dto.dish.CreateDishDto;
 import com.food.menuservice.domain.model.Dish;
 import com.food.menuservice.service.contract.DishService;
 import jakarta.validation.Valid;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/dishes")
@@ -34,4 +35,35 @@ public class DishController {
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
     }
+
+    @GetMapping("/findAll")
+    public ResponseEntity<GeneralResponse>findAllDishes(){
+        try{
+            List<Dish>dishes = dishService.findAllDish();
+            return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dishes);
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @GetMapping("find-by-ids/{ids}")
+    public ResponseEntity<GeneralResponse>findAllDishesByIds(@PathVariable List<UUID>ids){
+        try{
+            List<Dish>dishes = dishService.findAllByIds(ids);
+            return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dishes);
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @GetMapping("findId/{id}")
+    public ResponseEntity<GeneralResponse>findDishById(@PathVariable UUID id){
+        try {
+            Dish dish = dishService.findDishById(id);
+            return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dish);
+        }catch (HttpError e){
+            return  GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
 }

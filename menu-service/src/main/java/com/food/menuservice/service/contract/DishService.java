@@ -10,4 +10,5 @@ public interface DishService {
     Dish createDish(CreateDishDto dishDto);
     List<Dish>findAllDish();
     Dish findDishById(UUID id);
+    List<Dish>findAllByIds(List<UUID>ids);
 }
