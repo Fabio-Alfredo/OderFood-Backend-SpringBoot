@@ -2,3 +2,4 @@ rootProject.name = 'OrderFoot'
 
 include('auth-service')
 include('menu-service')
+include('order-service')

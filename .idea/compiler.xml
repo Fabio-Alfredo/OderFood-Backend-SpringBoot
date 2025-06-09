@@ -9,12 +9,9 @@
         </processorPath>
         <module name="OrderFoot.auth-service.main" />
         <module name="OrderFoot.menu-service.main" />
+        <module name="OrderFoot.order-service.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17">
-      <module name="OrderFoot.order-service" target="21" />
-      <module name="OrderFoot.order-service.main" target="21" />
-      <module name="OrderFoot.order-service.test" target="21" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="17" />
   </component>
 </project>
