@@ -3,6 +3,7 @@ package com.food.menuservice.controller;
 import com.food.menuservice.Exception.HttpError;
 import com.food.menuservice.domain.GeneralResponse;
 import com.food.menuservice.domain.dto.dish.CreateDishDto;
+import com.food.menuservice.domain.dto.dish.IdsDishesDto;
 import com.food.menuservice.domain.model.Dish;
 import com.food.menuservice.service.contract.DishService;
 import jakarta.validation.Valid;
@@ -46,10 +47,10 @@ public class DishController {
         }
     }
 
-    @GetMapping("find-by-ids/{ids}")
-    public ResponseEntity<GeneralResponse>findAllDishesByIds(@PathVariable List<UUID>ids){
+    @GetMapping("/find-by-ids")
+    public ResponseEntity<GeneralResponse>findAllDishesByIds(@RequestBody @Valid IdsDishesDto idsDishesDto){
         try{
-            List<Dish>dishes = dishService.findAllByIds(ids);
+            List<Dish>dishes = dishService.findAllByIds(idsDishesDto);
             return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dishes);
         }catch (HttpError e){
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());

@@ -2,6 +2,7 @@ package com.food.menuservice.service.impl;
 
 import com.food.menuservice.Exception.HttpError;
 import com.food.menuservice.domain.dto.dish.CreateDishDto;
+import com.food.menuservice.domain.dto.dish.IdsDishesDto;
 import com.food.menuservice.domain.model.Dish;
 import com.food.menuservice.repository.DishRepository;
 import com.food.menuservice.service.contract.DishService;
@@ -65,10 +66,10 @@ public class DishServiceImpl implements DishService {
     }
 
     @Override
-    public List<Dish> findAllByIds(List<UUID> ids) {
+    public List<Dish> findAllByIds(IdsDishesDto idsDishesDto){
         try{
-            List<Dish>dishes = dishRepository.findAllById(ids);
-            if(dishes.size() != ids.size())
+            List<Dish>dishes = dishRepository.findAllById(idsDishesDto.getIds());
+            if(dishes.size() != idsDishesDto.getIds().size())
                 throw  new HttpError(HttpStatus.NOT_FOUND, "Some dishes are not available");
 
             return dishes;
