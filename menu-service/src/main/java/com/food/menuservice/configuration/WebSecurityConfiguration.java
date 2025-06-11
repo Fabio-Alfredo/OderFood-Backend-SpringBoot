@@ -31,7 +31,7 @@ public class WebSecurityConfiguration {
 
         httpSecurity.authorizeHttpRequests(auth ->
                 auth
-                        .requestMatchers("/api/dishes/findAll","/api/dishes/findById/{id}").permitAll()
+                        .requestMatchers("/api/dishes/findAll","/api/dishes/findById/{id}", "/api/dishes/find-by-ids").permitAll()
                         .anyRequest().authenticated()
                 );
         httpSecurity.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

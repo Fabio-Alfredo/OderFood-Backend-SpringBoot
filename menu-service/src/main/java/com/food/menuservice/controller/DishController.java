@@ -47,7 +47,7 @@ public class DishController {
         }
     }
 
-    @GetMapping("/find-by-ids")
+    @PostMapping("/find-by-ids")
     public ResponseEntity<GeneralResponse>findAllDishesByIds(@RequestBody @Valid IdsDishesDto idsDishesDto){
         try{
             List<Dish>dishes = dishService.findAllByIds(idsDishesDto);
