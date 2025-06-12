@@ -1,6 +1,6 @@
 package com.food.orderservice.handlers;
 
-import com.food.orderservice.domain.dto.GeneralResponse;
+import com.food.orderservice.domain.dto.common.GeneralResponse;
 import com.food.orderservice.utils.ErrorTools;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

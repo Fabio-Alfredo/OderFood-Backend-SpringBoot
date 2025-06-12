@@ -1,15 +1,13 @@
-package com.food.orderservice.domain.model;
+package com.food.orderservice.domain.dto.dishes;
 
 import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 import java.util.UUID;
 
-@Embeddable
 @Data
-public class OrderItem {
+public class DishDto {
     private UUID dishId;
     private String name;
-    private Integer quantity;
     private Double price;
 }

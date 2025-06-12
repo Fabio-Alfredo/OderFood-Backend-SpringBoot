@@ -20,7 +20,7 @@ public class Order {
     @ElementCollection
             @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
     List<OrderItem> items;
-    Double total;
-    private  LocalDateTime timestamp;
+    private Double total;
+    private  LocalDateTime timestamp = LocalDateTime.now();
     private StatusOrder status = StatusOrder.CREATED;
 }

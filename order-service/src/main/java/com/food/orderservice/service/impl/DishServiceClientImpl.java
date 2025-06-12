@@ -1,0 +1,88 @@
+package com.food.orderservice.service.impl;
+
+import com.food.orderservice.Exceptions.HttpError;
+import com.food.orderservice.domain.dto.common.ApisResponse;
+import com.food.orderservice.domain.dto.dishes.DishDto;
+import com.food.orderservice.domain.dto.dishes.DishesQuantityDto;
+import com.food.orderservice.domain.dto.dishes.IdsDto;
+import com.food.orderservice.domain.model.OrderItem;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientResponseException;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class DishServiceClientImpl {
+
+    @Value("${dishes.url}")
+    private String dishesUrl;
+
+    private final RestTemplate restTemplate;
+
+    public DishServiceClientImpl(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+    public List<OrderItem> validateProducts(List<DishesQuantityDto> dishesDto) {
+        try{
+            List<UUID>idsItems = dishesDto.stream().map(DishesQuantityDto::getDishId).toList();
+            List<DishDto> dishes = fetchDishesByIds(idsItems);
+
+            List<OrderItem> items = getOrderItems(dishesDto, dishes);
+            return  items;
+        }catch (RestClientResponseException e){
+            throw new HttpError((HttpStatus) e.getStatusCode(), e.getResponseBodyAsString());
+        }
+    }
+
+    private static List<OrderItem> getOrderItems(List<DishesQuantityDto> dishesDto, List<DishDto> dishes) {
+        List<OrderItem> items = new ArrayList<>();
+
+        for (int i = 0; i < dishes.size(); i++) {
+            DishDto dish = dishes.get(i);
+            DishesQuantityDto quantityDto = dishesDto.get(i);
+
+            OrderItem item = new OrderItem();
+            item.setDishId(dish.getDishId());
+            item.setName(dish.getName());
+            item.setPrice(dish.getPrice());
+            item.setQuantity(quantityDto.getQuantity());
+
+            items.add(item);
+        }
+        return items;
+    }
+
+    private List<DishDto> fetchDishesByIds(List<UUID> itemsIds) {
+        try {
+            IdsDto idsDto = new IdsDto(itemsIds);
+            String url = dishesUrl + "/find-by-ids";
+
+            ParameterizedTypeReference<ApisResponse<List<DishDto>>> responseType =
+                    new ParameterizedTypeReference<>() {};
+
+            ResponseEntity<ApisResponse<List<DishDto>>> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    new HttpEntity<>(idsDto),
+                    responseType
+            );
+
+            return response.getBody().getData();
+        } catch (RestClientResponseException e) {
+            throw new HttpError((HttpStatus) e.getStatusCode(), e.getResponseBodyAsString());
+        }
+    }
+
+
+
+}
