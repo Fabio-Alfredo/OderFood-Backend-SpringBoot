@@ -9,6 +9,7 @@ import com.food.orderservice.domain.model.OrderItem;
 import com.food.orderservice.service.contract.OrderService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -21,10 +22,15 @@ import java.util.UUID;
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private final DishServiceClientImpl dishServiceClient;
+    @Value("${kafka.topic.order-created}")
+    private String orderCreatedTopic;
 
-    public OrderServiceImpl(DishServiceClientImpl dishServiceClient) {
+    private final DishServiceClientImpl dishServiceClient;
+    private final KafkaTemplate<String, Order> kafkaTemplate;
+
+    public OrderServiceImpl(DishServiceClientImpl dishServiceClient, KafkaTemplate<String, Order> kafkaTemplate) {
         this.dishServiceClient = dishServiceClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
 
@@ -36,7 +42,8 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setItems(items);
         order.setTotal(orderDto.getTotal());
-        System.out.println("Order created with items: " + order);
+        kafkaTemplate.send(orderCreatedTopic, order);
+        System.out.println("Order created and sent to Kafka: " + order.getItems() + " Total: " + order.getTotal());
         return null;
     }
 

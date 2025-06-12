@@ -1,6 +1,9 @@
-package com.food.orderservice.configuration;
+package com.food.orderservice.configuration.kafka;
 
+import com.food.orderservice.domain.model.Order;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +27,7 @@ public class KafkaProviderConfiguration {
         // Configuración del serializador de claves
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         // Configuración del serializador de valores
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         // Configuración del serializador de valores
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         // Configuración del tipo de contenido del mensaje
@@ -33,12 +36,12 @@ public class KafkaProviderConfiguration {
     }
 
     @Bean
-    public ProducerFactory<String, String> providerFactory(){
+    public ProducerFactory<String, Order> providerFactory(){
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
+    public KafkaTemplate<String, Order> kafkaTemplate(ProducerFactory<String, Order> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }
