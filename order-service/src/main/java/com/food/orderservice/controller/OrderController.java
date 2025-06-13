@@ -1,9 +1,14 @@
 package com.food.orderservice.controller;
 
 import com.food.orderservice.Exceptions.HttpError;
+import com.food.orderservice.domain.dto.auth.UserDto;
+import com.food.orderservice.domain.dto.common.GeneralResponse;
 import com.food.orderservice.domain.dto.order.CreateOrderDto;
+import com.food.orderservice.domain.model.Order;
+import com.food.orderservice.service.contract.AuthService;
 import com.food.orderservice.service.contract.OrderService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,18 +20,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+    private final AuthService authService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, AuthService authService) {
         this.orderService = orderService;
+        this.authService = authService;
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<?> createOrder(@RequestBody @Valid CreateOrderDto orderDto) {
+    @GetMapping("/create")
+    public ResponseEntity<GeneralResponse> createOrder(@RequestBody @Valid CreateOrderDto orderDto) {
         try{
-            orderService.createOrder(orderDto);
-            return ResponseEntity.ok("Order created successfully");
+            UserDto user = authService.getUserAuthenticated();
+            Order order = orderService.createOrder(orderDto, user.getId());
+            return GeneralResponse.getResponse(
+                    HttpStatus.CREATED,
+                "Order created successfully", order);
         }catch (HttpError e){
-            return ResponseEntity.status(e.getHttpStatus()).body(e.getMessage());
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
-    Order creatOrder(CreateOrderDto orderDto, UUID consumerId);
+    Order createOrder(CreateOrderDto orderDto, UUID consumerId);
     Order findById(UUID orderId);
     List<Order>findByCustomerId(UUID userId);
     List<Order>findByStatusOrder(StatusOrder statusOrder);

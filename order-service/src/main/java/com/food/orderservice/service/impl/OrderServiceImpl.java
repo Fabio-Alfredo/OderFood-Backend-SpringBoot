@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackOn = Exception.class)
-    public Order creatOrder(CreateOrderDto orderDto, UUID consumerId) {
+    public Order createOrder(CreateOrderDto orderDto, UUID consumerId) {
         List<DishesQuantityDto> dishes = orderDto.getItemsIds();
         List<OrderItem> items = dishServiceClient.validateProducts(dishes);
 
