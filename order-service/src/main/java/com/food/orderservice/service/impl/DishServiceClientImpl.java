@@ -6,6 +6,8 @@ import com.food.orderservice.domain.dto.dishes.DishDto;
 import com.food.orderservice.domain.dto.dishes.DishesQuantityDto;
 import com.food.orderservice.domain.dto.dishes.IdsDto;
 import com.food.orderservice.domain.model.OrderItem;
+import com.food.orderservice.service.contract.AuthService;
+import com.food.orderservice.service.contract.DishServiceClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class DishServiceClientImpl {
+public class DishServiceClientImpl implements DishServiceClient {
 
     @Value("${dishes.url}")
     private String dishesUrl;
