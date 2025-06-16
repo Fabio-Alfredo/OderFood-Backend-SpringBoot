@@ -22,5 +22,5 @@ public class Order {
     List<OrderItem> items;
     private Double total;
     private  LocalDateTime timestamp = LocalDateTime.now();
-    private StatusOrder status = StatusOrder.CREATED;
+    private StatusOrder status = StatusOrder.PAYMENT_PENDING;
 }

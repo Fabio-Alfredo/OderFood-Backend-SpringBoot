@@ -5,6 +5,9 @@ public enum StatusOrder {
     SENT_TO_KITCHEN,
     COMPLETED,
     DELIVERED,
+    PENDING,
+    PAYMENT_PENDING,
+    PAYMENT_CONFIRMED,
     CANCELLED;
 
     public static StatusOrder fromString(String status){
