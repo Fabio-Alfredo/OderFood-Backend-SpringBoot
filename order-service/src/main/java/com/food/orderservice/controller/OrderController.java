@@ -4,16 +4,17 @@ import com.food.orderservice.Exceptions.HttpError;
 import com.food.orderservice.domain.dto.auth.UserDto;
 import com.food.orderservice.domain.dto.common.GeneralResponse;
 import com.food.orderservice.domain.dto.order.CreateOrderDto;
+import com.food.orderservice.domain.enums.StatusOrder;
 import com.food.orderservice.domain.model.Order;
 import com.food.orderservice.service.contract.AuthService;
 import com.food.orderservice.service.contract.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -35,6 +36,50 @@ public class OrderController {
             return GeneralResponse.getResponse(
                     HttpStatus.CREATED,
                 "Order created successfully", order);
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/find-by-customer")
+    public ResponseEntity<GeneralResponse>findAllByCustomer(){
+        try{
+            UserDto user = authService.getUserAuthenticated();
+            List<Order> orders = orderService.findByCustomerId(user.getId());
+            return GeneralResponse.getResponse(
+                    HttpStatus.OK,
+                    "Orders found successfully",
+                    orders
+                    );
+        }catch (HttpError e) {
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/find-by-id/{orderId}")
+    public ResponseEntity<GeneralResponse>findById(@PathVariable UUID orderId) {
+        try{
+            Order order = orderService.findById(orderId);
+            return GeneralResponse.getResponse(
+                    HttpStatus.OK,
+                    "Order found successfully",
+                    order
+            );
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/find-by-status/{statusOrder}")
+    public ResponseEntity<GeneralResponse> findByStatusOrder(@PathVariable String statusOrder) {
+        try{
+            StatusOrder status = StatusOrder.valueOf(statusOrder.toUpperCase());
+            List<Order> orders = orderService.findByStatusOrder(status);
+            return GeneralResponse.getResponse(
+                    HttpStatus.OK,
+                    "Orders found successfully",
+                    orders
+            );
         }catch (HttpError e){
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
