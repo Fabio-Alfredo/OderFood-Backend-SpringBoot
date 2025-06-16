@@ -9,6 +9,7 @@
         </processorPath>
         <module name="OrderFoot.auth-service.main" />
         <module name="OrderFoot.menu-service.main" />
+        <module name="OrderFoot.payment-service.main" />
         <module name="OrderFoot.order-service.main" />
       </profile>
     </annotationProcessing>
