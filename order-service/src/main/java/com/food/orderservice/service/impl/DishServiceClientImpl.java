@@ -3,10 +3,9 @@ package com.food.orderservice.service.impl;
 import com.food.orderservice.Exceptions.HttpError;
 import com.food.orderservice.domain.dto.common.ApisResponse;
 import com.food.orderservice.domain.dto.dishes.DishDto;
-import com.food.orderservice.domain.dto.dishes.DishesQuantityDto;
-import com.food.orderservice.domain.dto.dishes.IdsDto;
+import com.food.orderservice.domain.dto.dishes.DishQuantityRequestDto;
+import com.food.orderservice.domain.dto.dishes.DishIdListDto;
 import com.food.orderservice.domain.model.OrderItem;
-import com.food.orderservice.service.contract.AuthService;
 import com.food.orderservice.service.contract.DishServiceClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,9 +33,9 @@ public class DishServiceClientImpl implements DishServiceClient {
         this.restTemplate = restTemplate;
     }
 
-    public List<OrderItem> validateProducts(List<DishesQuantityDto> dishesDto) {
+    public List<OrderItem> validateProducts(List<DishQuantityRequestDto> dishesDto) {
         try{
-            List<UUID>idsItems = dishesDto.stream().map(DishesQuantityDto::getDishId).toList();
+            List<UUID>idsItems = dishesDto.stream().map(DishQuantityRequestDto::getDishId).toList();
             List<DishDto> dishes = fetchDishesByIds(idsItems);
 
             List<OrderItem> items = getOrderItems(dishesDto, dishes);
@@ -46,12 +45,12 @@ public class DishServiceClientImpl implements DishServiceClient {
         }
     }
 
-    private static List<OrderItem> getOrderItems(List<DishesQuantityDto> dishesDto, List<DishDto> dishes) {
+    private static List<OrderItem> getOrderItems(List<DishQuantityRequestDto> dishesDto, List<DishDto> dishes) {
         List<OrderItem> items = new ArrayList<>();
 
         for (int i = 0; i < dishes.size(); i++) {
             DishDto dish = dishes.get(i);
-            DishesQuantityDto quantityDto = dishesDto.get(i);
+            DishQuantityRequestDto quantityDto = dishesDto.get(i);
 
             OrderItem item = new OrderItem();
             item.setDishId(dish.getDishId());
@@ -66,7 +65,7 @@ public class DishServiceClientImpl implements DishServiceClient {
 
     private List<DishDto> fetchDishesByIds(List<UUID> itemsIds) {
         try {
-            IdsDto idsDto = new IdsDto(itemsIds);
+            DishIdListDto idsDto = new DishIdListDto(itemsIds);
             String url = dishesUrl + "/find-by-ids";
 
             ParameterizedTypeReference<ApisResponse<List<DishDto>>> responseType =

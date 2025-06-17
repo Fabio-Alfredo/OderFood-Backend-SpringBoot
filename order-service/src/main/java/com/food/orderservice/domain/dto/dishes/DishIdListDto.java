@@ -10,6 +10,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class IdsDto {
+public class DishIdListDto {
     private List<UUID> ids;
 }

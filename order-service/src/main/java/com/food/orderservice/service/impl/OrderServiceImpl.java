@@ -1,26 +1,21 @@
 package com.food.orderservice.service.impl;
 
 import com.food.orderservice.Exceptions.HttpError;
-import com.food.orderservice.domain.dto.dishes.DishesQuantityDto;
+import com.food.orderservice.domain.dto.dishes.DishQuantityRequestDto;
 import com.food.orderservice.domain.dto.order.CreateOrderDto;
-import com.food.orderservice.domain.dto.dishes.IdsDto;
 import com.food.orderservice.domain.enums.StatusOrder;
 import com.food.orderservice.domain.model.Order;
 import com.food.orderservice.domain.model.OrderItem;
 import com.food.orderservice.repositorie.OrderRepository;
 import com.food.orderservice.service.contract.OrderService;
 import jakarta.transaction.Transactional;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientResponseException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -43,18 +38,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackOn = Exception.class)
     public Order createOrder(CreateOrderDto orderDto, UUID consumerId) {
-        List<DishesQuantityDto> dishes = orderDto.getItemsIds();
+        List<DishQuantityRequestDto> dishes = orderDto.getItemsIds();
         List<OrderItem> items = dishServiceClient.validateProducts(dishes);
 
         Order order = new Order();
         order.setItems(items);
-        order.setTotal(orderDto.getTotal());
+        order.setTotal(calculateTotalPrice(items));
         order.setCustomerId(consumerId);
 
         Order newOrder = orderRepository.save(order);
-        kafkaTemplate.send(orderCreatedTopic, order);
+
+        System.out.println(newOrder);
 
         return newOrder;
+    }
+
+    private Double calculateTotalPrice(List<OrderItem> items) {
+        return items.stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
     }
 
     @Override
