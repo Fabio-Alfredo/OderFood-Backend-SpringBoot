@@ -1,2 +1,4 @@
-package com.food.paymentservice.services.impl;public class PaymentServiceImpl {
+package com.food.paymentservice.services.impl;
+
+public class PaymentServiceImpl {
 }

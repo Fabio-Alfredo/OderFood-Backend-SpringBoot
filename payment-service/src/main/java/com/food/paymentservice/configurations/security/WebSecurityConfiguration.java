@@ -1,4 +1,4 @@
-package com.food.paymentservice.configurations;
+package com.food.paymentservice.configurations.security;
 
 import com.food.paymentservice.utils.JwtFilterTools;
 import jakarta.servlet.http.HttpServletResponse;
