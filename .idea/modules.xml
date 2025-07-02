@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth-service/OrderFoot.auth-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/auth-service/OrderFoot.auth-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/menu-service/OrderFoot.menu-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/menu-service/OrderFoot.menu-service.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/order-service/OrderFoot.order-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order-service/OrderFoot.order-service.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/payment-service/OrderFoot.payment-service.main.iml" filepath="$PROJECT_DIR$/.idea/modules/payment-service/OrderFoot.payment-service.main.iml" />
     </modules>
   </component>
 </project>
