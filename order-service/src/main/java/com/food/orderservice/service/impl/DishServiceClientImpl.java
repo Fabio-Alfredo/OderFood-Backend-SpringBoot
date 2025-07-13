@@ -53,7 +53,7 @@ public class DishServiceClientImpl implements DishServiceClient {
             DishQuantityRequestDto quantityDto = dishesDto.get(i);
 
             OrderItem item = new OrderItem();
-            item.setDishId(dish.getDishId());
+            item.setDishId(dish.getId());
             item.setName(dish.getName());
             item.setPrice(dish.getPrice());
             item.setQuantity(quantityDto.getQuantity());
@@ -77,6 +77,8 @@ public class DishServiceClientImpl implements DishServiceClient {
                     new HttpEntity<>(idsDto),
                     responseType
             );
+
+            System.out.println("Response from Dish Service: " + response.getBody());
 
             return response.getBody().getData();
         } catch (RestClientResponseException e) {

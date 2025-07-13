@@ -28,7 +28,7 @@ public class OrderController {
         this.authService = authService;
     }
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     public ResponseEntity<GeneralResponse> createOrder(@RequestBody @Valid CreateOrderDto orderDto) {
         try{
             UserDto user = authService.getUserAuthenticated();

@@ -48,8 +48,6 @@ public class OrderServiceImpl implements OrderService {
 
         Order newOrder = orderRepository.save(order);
 
-        System.out.println(newOrder);
-
         return newOrder;
     }
 
