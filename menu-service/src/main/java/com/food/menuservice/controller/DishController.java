@@ -47,9 +47,12 @@ public class DishController {
         }
     }
 
-    @PostMapping("/find-by-ids")
-    public ResponseEntity<GeneralResponse>findAllDishesByIds(@RequestBody @Valid IdsDishesDto idsDishesDto){
+    @GetMapping("/find-by-ids")
+    public ResponseEntity<GeneralResponse>findAllDishesByIds(@RequestParam List<UUID>Ids){
         try{
+            IdsDishesDto idsDishesDto = new IdsDishesDto();
+            idsDishesDto.setIds(Ids);
+
             List<Dish>dishes = dishService.findAllByIds(idsDishesDto);
             return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dishes);
         }catch (HttpError e){
