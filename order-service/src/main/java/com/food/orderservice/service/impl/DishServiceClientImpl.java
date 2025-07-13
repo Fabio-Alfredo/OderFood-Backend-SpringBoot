@@ -65,16 +65,21 @@ public class DishServiceClientImpl implements DishServiceClient {
 
     private List<DishDto> fetchDishesByIds(List<UUID> itemsIds) {
         try {
-            DishIdListDto idsDto = new DishIdListDto(itemsIds);
-            String url = dishesUrl + "/find-by-ids";
+            // Construir la URL con query params
+            StringBuilder urlBuilder = new StringBuilder(dishesUrl + "/find-by-ids?");
+            for (UUID id : itemsIds) {
+                urlBuilder.append("Ids=").append(id.toString()).append("&");
+            }
+            // Eliminar el último '&'
+            String url = urlBuilder.substring(0, urlBuilder.length() - 1);
 
             ParameterizedTypeReference<ApisResponse<List<DishDto>>> responseType =
                     new ParameterizedTypeReference<>() {};
 
             ResponseEntity<ApisResponse<List<DishDto>>> response = restTemplate.exchange(
                     url,
-                    HttpMethod.POST,
-                    new HttpEntity<>(idsDto),
+                    HttpMethod.GET,
+                    null, // no hay body en GET
                     responseType
             );
 
