@@ -7,9 +7,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
 @Data
 @Table(name = "payments")
+@Entity
 public class Payment {
 
     @Id
@@ -21,5 +21,6 @@ public class Payment {
     private String currency;
     private String stripePaymentId;
     private PaymentStatus status;
-    private LocalDateTime createdAt;
+    
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

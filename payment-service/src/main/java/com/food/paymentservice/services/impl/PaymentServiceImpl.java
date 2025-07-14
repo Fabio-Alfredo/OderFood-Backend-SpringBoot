@@ -26,30 +26,22 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public Payment confirmPayment(CreatePaymentDto paymentDto) {
+        return null;
+    }
+
+    @Override
     public Payment createPayment(CreatePaymentDto paymentDto) {
         try{
-            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                    .setAmount((long) (paymentDto.getAmount() * 100))
-                    .setCurrency(paymentDto.getCurrency() != null ? paymentDto.getCurrency() : "usd")
-                    .setPaymentMethod(paymentDto.getPaymentMethodId()) // ID como "pm_..."
-                    .setConfirm(true)
-                    .setConfirmationMethod(PaymentIntentCreateParams.ConfirmationMethod.MANUAL)
-                    .setDescription("Payment for order " + paymentDto.getOrderId())
-                    .build();
-
-            PaymentIntent intent = PaymentIntent.create(params);
-
             Payment payment = new Payment();
-            payment.setOrderId(paymentDto.getOrderId());
-            payment.setAmount(paymentDto.getAmount());
-            payment.setCurrency(paymentDto.getCurrency() != null ? paymentDto.getCurrency() : "usd");
-            payment.setStripePaymentId(intent.getId());
-            payment.setStatus(PaymentStatus.COMPLETED);
-
+            payment.setUserId(paymentDto.getCustomerId());
+            payment.setOrderId(paymentDto.getId());
+            payment.setAmount(paymentDto.getTotal());
+            payment.setStatus(PaymentStatus.PENDING);
 
             return paymentRepository.save(payment);
-        } catch (StripeException e) {
-            throw new RuntimeException(e);
+        }catch (HttpError e){
+            throw  e;
         }
     }
 }

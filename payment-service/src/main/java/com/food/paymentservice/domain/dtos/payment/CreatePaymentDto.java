@@ -8,12 +8,12 @@ import java.util.UUID;
 
 @Data
 public class CreatePaymentDto {
+
+    @NotEmpty(message = "Payment method ID cannot be empty")
+    private UUID customerId;
     @NotEmpty(message = "Order ID cannot be empty")
-    private UUID orderId;
-    @NotEmpty(message = "User ID cannot be empty")
-    private String paymentMethodId;
-    private String currency;
+    private UUID id;
     @NotEmpty(message = "Amount cannot be empty")
-    private Double amount;
+    private Double total;
 
 }

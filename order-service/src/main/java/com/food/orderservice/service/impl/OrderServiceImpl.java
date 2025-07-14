@@ -47,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
         order.setCustomerId(consumerId);
 
         Order newOrder = orderRepository.save(order);
+        kafkaTemplate.send(orderCreatedTopic, newOrder.getId().toString(), newOrder);
 
         return newOrder;
     }
