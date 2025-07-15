@@ -1,4 +1,4 @@
-package com.food.paymentservice.configurations.kafka.consumer;
+package com.food.paymentservice.configurations.kafka;
 
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
 import org.apache.kafka.clients.consumer.Consumer;
