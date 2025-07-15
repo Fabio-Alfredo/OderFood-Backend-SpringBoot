@@ -3,6 +3,7 @@ package com.food.paymentservice.controllers;
 import com.food.paymentservice.Exceptions.HttpError;
 import com.food.paymentservice.domain.commons.GeneralResponse;
 import com.food.paymentservice.domain.dtos.auth.UserDto;
+import com.food.paymentservice.domain.dtos.payment.ConfirmPaymentDto;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
 import com.food.paymentservice.domain.models.Payment;
 import com.food.paymentservice.services.contrat.AuthService;
@@ -27,10 +28,10 @@ public class PaymentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<GeneralResponse> createPayment(@RequestBody CreatePaymentDto paymentDto){
+    public ResponseEntity<GeneralResponse> confirmPayment(@RequestBody ConfirmPaymentDto paymentDto){
         try{
             UserDto user = authService.getUserAuthenticated();
-            Payment payment = paymentService.createPayment(paymentDto);
+            Payment payment = paymentService.confirmPayment(paymentDto, user);
 
             return GeneralResponse.getResponse(HttpStatus.ACCEPTED, "Payment created successfully", payment);
         }catch (HttpError e){

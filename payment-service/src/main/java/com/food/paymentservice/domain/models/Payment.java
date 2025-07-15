@@ -20,7 +20,9 @@ public class Payment {
     private Double amount;
     private String currency;
     private String stripePaymentId;
+    private String paymentMethodId;
+    private String description;
     private PaymentStatus status;
-    
+
     private LocalDateTime createdAt = LocalDateTime.now();
 }
