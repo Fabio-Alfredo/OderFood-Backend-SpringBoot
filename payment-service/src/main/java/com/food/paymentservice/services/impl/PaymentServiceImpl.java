@@ -13,7 +13,9 @@ import com.stripe.model.Charge;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.ChargeCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,12 +24,17 @@ import java.util.UUID;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
+    @Value("${kafka.topic.payment-create}")
+    private String paymentCreateTopic;
+
     private final PaymentRepository paymentRepository;
     private final StripeServiceImpl stripeService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, StripeServiceImpl stripeService) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, StripeServiceImpl stripeService, KafkaTemplate<String, String> kafkaTemplate) {
         this.paymentRepository = paymentRepository;
         this.stripeService = stripeService;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     @Override
@@ -51,6 +58,8 @@ public class PaymentServiceImpl implements PaymentService {
 
             String PaymentId = stripeService.createPaymentStripe(payment);
             payment.setStripePaymentId(PaymentId);
+
+            kafkaTemplate.send(paymentCreateTopic, payment.getOrderId().toString(), payment.getStatus().toString());
 
             return paymentRepository.save(payment);
         }catch (HttpError e) {

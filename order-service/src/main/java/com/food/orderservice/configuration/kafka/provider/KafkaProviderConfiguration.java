@@ -1,9 +1,8 @@
-package com.food.orderservice.configuration.kafka;
+package com.food.orderservice.configuration.kafka.provider;
 
 import com.food.orderservice.domain.model.Order;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
