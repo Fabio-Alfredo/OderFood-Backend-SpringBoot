@@ -1,5 +1,6 @@
 package com.food.orderservice.utils;
 
+import com.food.orderservice.domain.OrderEvent;
 import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ public class PaymentConsumerListener {
             topics = "${kafka.topic.payment-create}",
             groupId = "order-service-group"
     )
-    public void listen(String message) {
+    public void listen(OrderEvent<?> message) {
         try {
 
             LOGGER.info("Received message from payment service: {}", message);

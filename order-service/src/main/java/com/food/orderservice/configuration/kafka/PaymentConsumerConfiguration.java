@@ -1,5 +1,6 @@
 package com.food.orderservice.configuration.kafka;
 
+import com.food.orderservice.domain.OrderEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,24 +25,28 @@ public class PaymentConsumerConfiguration {
 
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+
+        // Configuración del deserializador JSON
+        properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
+        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, OrderEvent.class.getName());
 
 
         return properties;
     }
 
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, OrderEvent<?>> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
-                new StringDeserializer()
+                new JsonDeserializer<>(OrderEvent.class)
         );
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String>kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent<?>>kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, OrderEvent<?>> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;

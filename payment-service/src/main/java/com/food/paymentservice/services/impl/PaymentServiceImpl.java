@@ -1,6 +1,7 @@
 package com.food.paymentservice.services.impl;
 
 import com.food.paymentservice.Exceptions.HttpError;
+import com.food.paymentservice.domain.commons.OrderEvent;
 import com.food.paymentservice.domain.dtos.auth.UserDto;
 import com.food.paymentservice.domain.dtos.payment.ConfirmPaymentDto;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
@@ -29,9 +30,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final StripeServiceImpl stripeService;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, OrderEvent<?>> kafkaTemplate;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, StripeServiceImpl stripeService, KafkaTemplate<String, String> kafkaTemplate) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, StripeServiceImpl stripeService, KafkaTemplate<String, OrderEvent<?>> kafkaTemplate) {
         this.paymentRepository = paymentRepository;
         this.stripeService = stripeService;
         this.kafkaTemplate = kafkaTemplate;
@@ -58,6 +59,8 @@ public class PaymentServiceImpl implements PaymentService {
             String PaymentId = stripeService.createPaymentStripe(payment);
             payment.setStripePaymentId(PaymentId);
 
+            OrderEvent<ConfirmPaymentDto> orderEvent = new OrderEvent<>("confirm-payment", paymentDto);
+            kafkaTemplate.send(paymentCreateTopic, orderEvent);
 
             return paymentRepository.save(payment);
         }catch (HttpError e) {
