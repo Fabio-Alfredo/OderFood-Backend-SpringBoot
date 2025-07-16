@@ -102,6 +102,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public Order updateStatusOrder(UpdateStatusOrder statusOrder) {
         try{
             System.out.println("Updating order status: " + statusOrder);
@@ -110,9 +111,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new HttpError(HttpStatus.NOT_FOUND, "Order not found");
             }
 
-            if(statusOrder.getStatus() == StatusOrder.CANCELLED && order.getStatus() == StatusOrder.DELIVERED) {
-                throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot cancel a delivered order.");
-            }
+            validateStatusTransaction(order.getStatus(), statusOrder.getStatus());
 
             order.setStatus(statusOrder.getStatus());
             Order updatedOrder = orderRepository.save(order);
@@ -124,6 +123,18 @@ public class OrderServiceImpl implements OrderService {
             return updatedOrder;
         }catch (HttpError e) {
             throw e;
+        }
+    }
+
+    private void validateStatusTransaction(StatusOrder statusOrder, StatusOrder newStatus){
+        if(statusOrder == StatusOrder.DELIVERED && newStatus != StatusOrder.CANCELLED) {
+            throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot change status from DELIVERED to " + newStatus);
+        }
+        if(statusOrder == StatusOrder.CANCELLED) {
+            throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot change status from CANCELLED to " + newStatus);
+        }
+        if(statusOrder == StatusOrder.PAYMENT_CONFIRMED && newStatus != StatusOrder.DELIVERED && newStatus != StatusOrder.CANCELLED) {
+            throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot change status from PAYMENT_CONFIRMED to " + newStatus);
         }
     }
 

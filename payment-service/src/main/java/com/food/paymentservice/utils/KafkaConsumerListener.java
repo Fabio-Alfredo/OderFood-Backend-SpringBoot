@@ -45,6 +45,7 @@ public class KafkaConsumerListener {
             switch (orderEvent.getEventType()){
                 case "create-order":
                     CreatePaymentDto paymentDto = convertTo(orderEvent.getData(), CreatePaymentDto.class);
+                    System.out.println("Received payment creation request: " + paymentDto.getOrderId() + ", Amount: " + paymentDto.getAmount());
                     paymentService.createPayment(paymentDto);
                     break;
                 case "cancel-order":

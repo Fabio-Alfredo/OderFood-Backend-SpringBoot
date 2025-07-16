@@ -16,6 +16,7 @@ import com.stripe.model.Charge;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.ChargeCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -56,10 +57,9 @@ public class PaymentServiceImpl implements PaymentService {
                 throw new HttpError(HttpStatus.UNAUTHORIZED, "User not authorized to confirm this payment." );
             }
 
+            payment = modelMapper.map(paymentDto, Payment.class);
            payment.setDescription("Payment for order " + paymentDto.getOrderId() + " confirmed." );
             payment.setStatus(PaymentStatus.COMPLETED);
-            payment.setCurrency(paymentDto.getCurrency());
-            payment.setPaymentMethodId(paymentDto.getPaymentMethodId());
 
             String PaymentId = stripeService.createPaymentStripe(payment);
             payment.setStripePaymentId(PaymentId);
@@ -74,22 +74,26 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public Payment createPayment(CreatePaymentDto paymentDto) {
         try{
 
-            if(paymentRepository.existsByOrderId(paymentDto.getId())) {
+            if(paymentRepository.existsByOrderId(paymentDto.getOrderId())) {
                 throw new HttpError(HttpStatus.CONFLICT, "Payment already exists for this order.");
             }
+
             Payment payment = new Payment();
+            payment.setOrderId(paymentDto.getOrderId());
             payment.setUserId(paymentDto.getCustomerId());
-            payment.setOrderId(paymentDto.getId());
-            payment.setAmount(paymentDto.getTotal());
+            payment.setAmount(paymentDto.getAmount());
             payment.setStatus(PaymentStatus.PENDING);
+            
 
             Payment newPayment = paymentRepository.save(payment);
 
-            System.out.println("Payment created with ID: " + newPayment);
+
 
             return newPayment;
         }catch (HttpError e){
