@@ -1,14 +1,16 @@
-package com.food.paymentservice.domain.dtos.payment;
+package com.food.orderservice.domain.dto.order;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-
 @Data
-public class CreatePaymentDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class SendOrderToPaymentServiceDto {
 
     @NotEmpty(message = "Payment method ID cannot be empty")
     private UUID customerId;
