@@ -16,5 +16,5 @@ public interface UserService {
     //metodos para manejo de tokens
     Token registerToken(User user);
     void cleanTokens(User user);
-    UserTokenDto getAuthenticatedUser();
+    User getAuthenticatedUser();
 }

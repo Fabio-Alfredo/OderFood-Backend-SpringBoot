@@ -22,12 +22,7 @@ public class JwtTools {
     @Value("${jwt.expiration}")
     private Long expiration_authentication;
 
-    @Value("${recory.token.secret}")
-    private String secret_recovery;
-    @Value("${recovery.token.expiration}")
-    private Long expiration_recovery;
-
-    public String generateToken(User user, TokenType tokenType){
+    public String generateToken(User user){
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
@@ -37,10 +32,11 @@ public class JwtTools {
                 .claims(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + (tokenType == TokenType.AUTHENTICATION ? expiration_authentication : expiration_recovery) * 1000L))
-                .signWith(Keys.hmacShaKeyFor(tokenType == TokenType.AUTHENTICATION ? secret_authentication.getBytes() : secret_recovery.getBytes()))
+                .expiration(new Date(System.currentTimeMillis() + (expiration_authentication) * 1000L))
+                .signWith(Keys.hmacShaKeyFor( secret_authentication.getBytes()))
                 .compact();
     }
+
 
     public Boolean verifyToken(String token){
         try{
@@ -70,22 +66,22 @@ public class JwtTools {
         }
     }
 
-    public UserTokenDto getUserFromToken(String token){
-        try{
-            JwtParser parser = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret_authentication.getBytes()))
-                    .build();
-
-            Claims claims = parser.parseSignedClaims(token).getPayload();
-            System.out.println(claims + " claims");
-            UserTokenDto userTokenDto = new UserTokenDto();
-            userTokenDto.setEmail(claims.get("email", String.class));
-            userTokenDto.setUsername(claims.get("username", String.class));
-            userTokenDto.setId(UUID.fromString(claims.get("id", String.class)));
-
-            return userTokenDto;
-        }catch (Exception e) {
-            return null;
-        }
-    }
+//    public UserTokenDto getUserFromToken(String token){
+//        try{
+//            JwtParser parser = Jwts.parser()
+//                    .verifyWith(Keys.hmacShaKeyFor(secret_authentication.getBytes()))
+//                    .build();
+//
+//            Claims claims = parser.parseSignedClaims(token).getPayload();
+//            System.out.println(claims + " claims");
+//            UserTokenDto userTokenDto = new UserTokenDto();
+//            userTokenDto.setEmail(claims.get("email", String.class));
+//            userTokenDto.setUsername(claims.get("username", String.class));
+//            userTokenDto.setId(UUID.fromString(claims.get("id", String.class)));
+//
+//            return userTokenDto;
+//        }catch (Exception e) {
+//            return null;
+//        }
+//    }
 }

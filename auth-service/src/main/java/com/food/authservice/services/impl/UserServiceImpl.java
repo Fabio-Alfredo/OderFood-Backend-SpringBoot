@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService {
         try{
             cleanTokens(user);
             //generar token
-            String tokenString = jwtTools.generateToken(user, TokenType.AUTHENTICATION);
+            String tokenString = jwtTools.generateToken(user);
 
             Token token = new Token(user, tokenString);
 
@@ -126,9 +126,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserTokenDto getAuthenticatedUser() {
+    public User getAuthenticatedUser() {
         try{
-            UserTokenDto user = (UserTokenDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             if(user == null) {
                 throw new HttpError(HttpStatus.UNAUTHORIZED, "User not authenticated");
