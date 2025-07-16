@@ -6,6 +6,7 @@ import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
 import com.food.paymentservice.domain.dtos.payment.UpdateStatus;
 import com.food.paymentservice.domain.models.Payment;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface PaymentService {
@@ -13,4 +14,5 @@ public interface PaymentService {
     Payment createPayment(CreatePaymentDto paymentDto);
     Payment findByOrderId(UUID orderId);
     Payment updatePaymentStatus(UpdateStatus updateStatus);
+    List<Payment>findAllByUser(UserDto user);
 }

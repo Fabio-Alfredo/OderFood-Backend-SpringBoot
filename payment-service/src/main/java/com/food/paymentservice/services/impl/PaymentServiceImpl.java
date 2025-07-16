@@ -24,6 +24,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -57,7 +58,9 @@ public class PaymentServiceImpl implements PaymentService {
                 throw new HttpError(HttpStatus.UNAUTHORIZED, "User not authorized to confirm this payment." );
             }
 
-            payment = modelMapper.map(paymentDto, Payment.class);
+            payment.setCurrency(paymentDto.getCurrency());
+            payment.setPaymentMethodId(paymentDto.getPaymentMethodId());
+            System.out.println("Payment details: " + payment.toString());
            payment.setDescription("Payment for order " + paymentDto.getOrderId() + " confirmed." );
             payment.setStatus(PaymentStatus.COMPLETED);
 
@@ -89,13 +92,10 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setUserId(paymentDto.getCustomerId());
             payment.setAmount(paymentDto.getAmount());
             payment.setStatus(PaymentStatus.PENDING);
-            
-
-            Payment newPayment = paymentRepository.save(payment);
 
 
 
-            return newPayment;
+            return paymentRepository.save(payment);
         }catch (HttpError e){
             throw  e;
         }
@@ -121,6 +121,19 @@ public class PaymentServiceImpl implements PaymentService {
 
            return paymentRepository.save(payment);
         }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
+    public List<Payment> findAllByUser(UserDto user) {
+        try{
+            List<Payment>payments = paymentRepository.findByUserId(user.getId());
+            if(payments.isEmpty()) {
+                throw new HttpError(HttpStatus.NOT_FOUND, "No payments found for the user.");
+            }
+            return payments;
+        }catch (HttpError e) {
             throw e;
         }
     }

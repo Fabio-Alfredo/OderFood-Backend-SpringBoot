@@ -133,9 +133,6 @@ public class OrderServiceImpl implements OrderService {
         if(statusOrder == StatusOrder.CANCELLED) {
             throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot change status from CANCELLED to " + newStatus);
         }
-        if(statusOrder == StatusOrder.PAYMENT_CONFIRMED && newStatus != StatusOrder.DELIVERED && newStatus != StatusOrder.CANCELLED) {
-            throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot change status from PAYMENT_CONFIRMED to " + newStatus);
-        }
     }
 
 }
