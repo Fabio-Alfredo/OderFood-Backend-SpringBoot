@@ -5,20 +5,19 @@ import com.food.orderservice.domain.OrderEvent;
 import com.food.orderservice.domain.dto.order.UpdateStatusOrder;
 import com.food.orderservice.domain.enums.StatusOrder;
 import com.food.orderservice.service.contract.OrderService;
-import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PaymentConsumerListener {
+public class OrderEventListener {
 
-    private static  final Logger LOGGER = LoggerFactory.getLogger(PaymentConsumerListener.class);
+    private static  final Logger LOGGER = LoggerFactory.getLogger(OrderEventListener.class);
     private final OrderService orderService;
     private  final ObjectMapper objectMapper;
 
-    public PaymentConsumerListener(OrderService orderService, ObjectMapper objectMapper) {
+    public OrderEventListener(OrderService orderService, ObjectMapper objectMapper) {
         this.orderService = orderService;
         this.objectMapper = objectMapper;
     }

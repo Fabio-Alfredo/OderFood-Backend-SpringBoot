@@ -1,6 +1,7 @@
 package com.food.authservice.utils;
 
 import com.food.authservice.domains.dtos.user.UserTokenDto;
+import com.food.authservice.domains.enums.TokenType;
 import com.food.authservice.domains.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
@@ -17,11 +18,16 @@ import java.util.UUID;
 @Component
 public class JwtTools {
     @Value("${jwt.secret}")
-    private String secret;
+    private String secret_authentication;
     @Value("${jwt.expiration}")
-    private Long expiration;
+    private Long expiration_authentication;
 
-    public String generateToken(User user){
+    @Value("${recory.token.secret}")
+    private String secret_recovery;
+    @Value("${recovery.token.expiration}")
+    private Long expiration_recovery;
+
+    public String generateToken(User user, TokenType tokenType){
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", user.getUsername());
         claims.put("email", user.getEmail());
@@ -31,15 +37,15 @@ public class JwtTools {
                 .claims(claims)
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration * 1000L))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                .expiration(new Date(System.currentTimeMillis() + (tokenType == TokenType.AUTHENTICATION ? expiration_authentication : expiration_recovery) * 1000L))
+                .signWith(Keys.hmacShaKeyFor(tokenType == TokenType.AUTHENTICATION ? secret_authentication.getBytes() : secret_recovery.getBytes()))
                 .compact();
     }
 
     public Boolean verifyToken(String token){
         try{
             JwtParser parser = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(secret_authentication.getBytes()))
                     .build();
 
             parser.parse(token);
@@ -53,7 +59,7 @@ public class JwtTools {
     public String getEmailFromToken(String token){
         try {
             JwtParser parser = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(secret_authentication.getBytes()))
                     .build();
 
             return parser.parseSignedClaims(token)
@@ -67,7 +73,7 @@ public class JwtTools {
     public UserTokenDto getUserFromToken(String token){
         try{
             JwtParser parser = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(secret_authentication.getBytes()))
                     .build();
 
             Claims claims = parser.parseSignedClaims(token).getPayload();

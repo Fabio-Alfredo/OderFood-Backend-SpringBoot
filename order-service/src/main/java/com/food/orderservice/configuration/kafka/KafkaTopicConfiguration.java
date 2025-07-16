@@ -1,4 +1,4 @@
-package com.food.orderservice.configuration.kafka.provider;
+package com.food.orderservice.configuration.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;

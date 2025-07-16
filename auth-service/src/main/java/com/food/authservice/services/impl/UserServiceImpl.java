@@ -3,6 +3,7 @@ package com.food.authservice.services.impl;
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
 import com.food.authservice.domains.dtos.user.UserTokenDto;
+import com.food.authservice.domains.enums.TokenType;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
 import com.food.authservice.exceptions.HttpError;
@@ -99,7 +100,7 @@ public class UserServiceImpl implements UserService {
         try{
             cleanTokens(user);
             //generar token
-            String tokenString = jwtTools.generateToken(user);
+            String tokenString = jwtTools.generateToken(user, TokenType.AUTHENTICATION);
 
             Token token = new Token(user, tokenString);
 

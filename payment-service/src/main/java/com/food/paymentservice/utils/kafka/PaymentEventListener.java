@@ -1,35 +1,28 @@
-package com.food.paymentservice.utils;
+package com.food.paymentservice.utils.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.paymentservice.domain.commons.OrderEvent;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
 import com.food.paymentservice.domain.dtos.payment.UpdateStatus;
 import com.food.paymentservice.domain.enums.PaymentStatus;
-import com.food.paymentservice.domain.models.Payment;
 import com.food.paymentservice.services.contrat.PaymentService;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
-public class KafkaConsumerListener {
+public class PaymentEventListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentEventListener.class);
     private final PaymentService paymentService;
     private final ObjectMapper objectMapper;
 
     @Value("${kafka.topic.order-created}")
     private String orderCreatedTopic;
 
-    public KafkaConsumerListener(PaymentService paymentService, ObjectMapper objectMapper) {
+    public PaymentEventListener(PaymentService paymentService, ObjectMapper objectMapper) {
         this.paymentService = paymentService;
         this.objectMapper = objectMapper;
     }

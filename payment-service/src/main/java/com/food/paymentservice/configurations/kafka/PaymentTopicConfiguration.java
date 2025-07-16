@@ -1,4 +1,4 @@
-package com.food.paymentservice.configurations.kafka.provider;
+package com.food.paymentservice.configurations.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.config.TopicConfig;

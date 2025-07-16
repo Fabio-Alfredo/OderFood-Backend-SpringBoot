@@ -1,6 +1,6 @@
-package com.food.orderservice.configuration.kafka;
+package com.food.paymentservice.configurations.kafka.consumer;
 
-import com.food.orderservice.domain.OrderEvent;
+import com.food.paymentservice.domain.commons.OrderEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class PaymentConsumerConfiguration {
+public class KafkaConsumerConfiguration {
 
-    @Value("`${spring.kafka.bootstrap-servers}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     public Map<String, Object> consumerConfig() {
@@ -31,12 +31,11 @@ public class PaymentConsumerConfiguration {
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, OrderEvent.class.getName());
 
-
         return properties;
     }
 
     @Bean
-    public ConsumerFactory<String, OrderEvent<?>> consumerFactory() {
+    public ConsumerFactory<String, OrderEvent> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
@@ -45,8 +44,8 @@ public class PaymentConsumerConfiguration {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent<?>>kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, OrderEvent<?>> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, OrderEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
