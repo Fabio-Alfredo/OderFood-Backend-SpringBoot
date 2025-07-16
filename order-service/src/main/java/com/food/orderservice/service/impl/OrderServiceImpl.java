@@ -4,6 +4,7 @@ import com.food.orderservice.Exceptions.HttpError;
 import com.food.orderservice.domain.OrderEvent;
 import com.food.orderservice.domain.dto.dishes.DishQuantityRequestDto;
 import com.food.orderservice.domain.dto.order.CreateOrderDto;
+import com.food.orderservice.domain.dto.order.UpdateStatusOrder;
 import com.food.orderservice.domain.enums.StatusOrder;
 import com.food.orderservice.domain.model.Order;
 import com.food.orderservice.domain.model.OrderItem;
@@ -91,6 +92,32 @@ public class OrderServiceImpl implements OrderService {
             List<Order> findAllOrders = orderRepository.findAllByStatus(statusOrder);
             return findAllOrders != null ? findAllOrders : new ArrayList<>();
         }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
+    public Order updateStatusOrder(UpdateStatusOrder statusOrder) {
+        try{
+            System.out.println("Updating order status: " + statusOrder);
+            Order order = orderRepository.findById(statusOrder.getOrderId()).orElse(null);
+            if(order == null) {
+                throw new HttpError(HttpStatus.NOT_FOUND, "Order not found");
+            }
+
+            if(statusOrder.getStatus() == StatusOrder.CANCELLED && order.getStatus() == StatusOrder.DELIVERED) {
+                throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot cancel a delivered order.");
+            }
+
+            order.setStatus(statusOrder.getStatus());
+            Order updatedOrder = orderRepository.save(order);
+
+            if(statusOrder.getStatus() == StatusOrder.CANCELLED){
+                OrderEvent<Order> orderEvent = new OrderEvent<>("cancel-order", updatedOrder);
+                kafkaTemplate.send(orderCreatedTopic, orderEvent);
+            }
+            return updatedOrder;
+        }catch (HttpError e) {
             throw e;
         }
     }

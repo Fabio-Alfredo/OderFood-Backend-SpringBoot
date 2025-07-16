@@ -2,6 +2,7 @@ package com.food.orderservice.service.contract;
 
 
 import com.food.orderservice.domain.dto.order.CreateOrderDto;
+import com.food.orderservice.domain.dto.order.UpdateStatusOrder;
 import com.food.orderservice.domain.enums.StatusOrder;
 import com.food.orderservice.domain.model.Order;
 import com.food.orderservice.domain.model.OrderItem;
@@ -14,4 +15,5 @@ public interface OrderService {
     Order findById(UUID orderId);
     List<Order>findByCustomerId(UUID userId);
     List<Order>findByStatusOrder(StatusOrder statusOrder);
+    Order updateStatusOrder(UpdateStatusOrder statusOrder);
 }

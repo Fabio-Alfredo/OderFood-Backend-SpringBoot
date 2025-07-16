@@ -5,6 +5,7 @@ import com.food.paymentservice.domain.commons.OrderEvent;
 import com.food.paymentservice.domain.dtos.auth.UserDto;
 import com.food.paymentservice.domain.dtos.payment.ConfirmPaymentDto;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
+import com.food.paymentservice.domain.dtos.payment.PaymentOrderDto;
 import com.food.paymentservice.domain.enums.PaymentStatus;
 import com.food.paymentservice.domain.models.Payment;
 import com.food.paymentservice.repositories.PaymentRepository;
@@ -14,6 +15,7 @@ import com.stripe.model.Charge;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.ChargeCreateParams;
 import com.stripe.param.PaymentIntentCreateParams;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -31,11 +33,13 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final StripeServiceImpl stripeService;
     private final KafkaTemplate<String, OrderEvent<?>> kafkaTemplate;
+    private final ModelMapper modelMapper;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, StripeServiceImpl stripeService, KafkaTemplate<String, OrderEvent<?>> kafkaTemplate) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, StripeServiceImpl stripeService, KafkaTemplate<String, OrderEvent<?>> kafkaTemplate, ModelMapper modelMapper) {
         this.paymentRepository = paymentRepository;
         this.stripeService = stripeService;
         this.kafkaTemplate = kafkaTemplate;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -59,7 +63,8 @@ public class PaymentServiceImpl implements PaymentService {
             String PaymentId = stripeService.createPaymentStripe(payment);
             payment.setStripePaymentId(PaymentId);
 
-            OrderEvent<ConfirmPaymentDto> orderEvent = new OrderEvent<>("confirm-payment", paymentDto);
+            PaymentOrderDto paymentOrderDto = modelMapper.map(payment, PaymentOrderDto.class);
+            OrderEvent<PaymentOrderDto> orderEvent = new OrderEvent<>("confirm-payment", paymentOrderDto);
             kafkaTemplate.send(paymentCreateTopic, orderEvent);
 
             return paymentRepository.save(payment);

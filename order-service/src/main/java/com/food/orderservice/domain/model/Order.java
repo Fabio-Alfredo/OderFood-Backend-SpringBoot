@@ -21,6 +21,6 @@ public class Order {
             @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
     List<OrderItem> items;
     private Double total;
-    private  LocalDateTime timestamp = LocalDateTime.now();
+//    private  LocalDateTime timestamp = LocalDateTime.now();
     private StatusOrder status = StatusOrder.PAYMENT_PENDING;
 }
