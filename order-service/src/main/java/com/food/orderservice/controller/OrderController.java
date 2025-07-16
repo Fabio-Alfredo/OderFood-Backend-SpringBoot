@@ -4,6 +4,7 @@ import com.food.orderservice.Exceptions.HttpError;
 import com.food.orderservice.domain.dto.auth.UserDto;
 import com.food.orderservice.domain.dto.common.GeneralResponse;
 import com.food.orderservice.domain.dto.order.CreateOrderDto;
+import com.food.orderservice.domain.dto.order.UpdateStatusOrder;
 import com.food.orderservice.domain.enums.StatusOrder;
 import com.food.orderservice.domain.model.Order;
 import com.food.orderservice.service.contract.AuthService;
@@ -37,6 +38,21 @@ public class OrderController {
                     HttpStatus.CREATED,
                 "Order created successfully", order);
         }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @PutMapping("/update-status")
+    public ResponseEntity<GeneralResponse>updateStatus(@RequestBody @Valid UpdateStatusOrder statusOrder){
+        try{
+            UserDto user = authService.getUserAuthenticated();
+            Order order = orderService.updateStatusOrder(statusOrder);
+            return GeneralResponse.getResponse(
+                    HttpStatus.OK,
+                    "Order status updated successfully",
+                    order
+            );
+        }catch (HttpError e) {
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
     }

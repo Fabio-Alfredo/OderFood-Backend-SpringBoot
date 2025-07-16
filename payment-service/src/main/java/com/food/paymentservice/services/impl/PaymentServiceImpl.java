@@ -6,6 +6,7 @@ import com.food.paymentservice.domain.dtos.auth.UserDto;
 import com.food.paymentservice.domain.dtos.payment.ConfirmPaymentDto;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
 import com.food.paymentservice.domain.dtos.payment.PaymentOrderDto;
+import com.food.paymentservice.domain.dtos.payment.UpdateStatus;
 import com.food.paymentservice.domain.enums.PaymentStatus;
 import com.food.paymentservice.domain.models.Payment;
 import com.food.paymentservice.repositories.PaymentRepository;
@@ -99,6 +100,25 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public Payment findByOrderId(UUID orderId) {
         return null;
+    }
+
+    @Override
+    public Payment updatePaymentStatus(UpdateStatus updateStatus) {
+        try{
+           Payment payment = paymentRepository.findByOrderId(updateStatus.getOrderId());
+           if(payment == null) {
+               throw new HttpError(HttpStatus.NOT_FOUND, "Payment not found for the given order ID.");
+           }
+
+           if(payment.getStatus() == PaymentStatus.COMPLETED) {
+               throw new HttpError(HttpStatus.BAD_REQUEST, "Cannot update status of a completed payment.");
+           }
+           payment.setStatus(updateStatus.getStatus());
+
+           return paymentRepository.save(payment);
+        }catch (HttpError e){
+            throw e;
+        }
     }
 
 

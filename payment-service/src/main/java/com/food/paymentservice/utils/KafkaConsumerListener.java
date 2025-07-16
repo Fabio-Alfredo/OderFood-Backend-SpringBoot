@@ -3,6 +3,8 @@ package com.food.paymentservice.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.paymentservice.domain.commons.OrderEvent;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
+import com.food.paymentservice.domain.dtos.payment.UpdateStatus;
+import com.food.paymentservice.domain.enums.PaymentStatus;
 import com.food.paymentservice.domain.models.Payment;
 import com.food.paymentservice.services.contrat.PaymentService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -44,6 +46,11 @@ public class KafkaConsumerListener {
                 case "create-order":
                     CreatePaymentDto paymentDto = convertTo(orderEvent.getData(), CreatePaymentDto.class);
                     paymentService.createPayment(paymentDto);
+                    break;
+                case "cancel-order":
+                    UpdateStatus updateStatus = convertTo(orderEvent.getData(), UpdateStatus.class);
+                    updateStatus.setStatus(PaymentStatus.CANCELLED);
+                    paymentService.updatePaymentStatus(updateStatus);
                     break;
 
                 default:
