@@ -1,5 +1,6 @@
 package com.food.orderservice.configuration.kafka.provider;
 
+import com.food.orderservice.domain.OrderEvent;
 import com.food.orderservice.domain.model.Order;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -35,12 +36,12 @@ public class KafkaProviderConfiguration {
     }
 
     @Bean
-    public ProducerFactory<String, Order> providerFactory(){
+    public ProducerFactory<String, OrderEvent> providerFactory(){
         return new DefaultKafkaProducerFactory<>(producerConfig());
     }
 
     @Bean
-    public KafkaTemplate<String, Order> kafkaTemplate(ProducerFactory<String, Order> producerFactory) {
+    public KafkaTemplate<String, OrderEvent> kafkaTemplate(ProducerFactory<String, OrderEvent> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
 }

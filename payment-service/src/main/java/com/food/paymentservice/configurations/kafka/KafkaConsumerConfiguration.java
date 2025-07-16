@@ -1,5 +1,6 @@
 package com.food.paymentservice.configurations.kafka;
 
+import com.food.paymentservice.domain.commons.OrderEvent;
 import com.food.paymentservice.domain.dtos.payment.CreatePaymentDto;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -35,23 +36,23 @@ public class KafkaConsumerConfiguration {
 
         // Configuración del deserializador JSON
         properties.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, CreatePaymentDto.class.getName());
+        properties.put(JsonDeserializer.VALUE_DEFAULT_TYPE, OrderEvent.class.getName());
 
         return properties;
     }
 
     @Bean
-    public ConsumerFactory<String, CreatePaymentDto> consumerFactory() {
+    public ConsumerFactory<String, OrderEvent> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(
                 consumerConfig(),
                 new StringDeserializer(),
-                new JsonDeserializer<>(CreatePaymentDto.class)
+                new JsonDeserializer<>(OrderEvent.class)
         );
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, CreatePaymentDto> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, CreatePaymentDto> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, OrderEvent> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, OrderEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;

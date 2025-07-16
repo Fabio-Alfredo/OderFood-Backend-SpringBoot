@@ -24,5 +24,5 @@ public class Payment {
     private String description;
     private PaymentStatus status;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+//    private LocalDateTime createdAt = LocalDateTime.now();
 }

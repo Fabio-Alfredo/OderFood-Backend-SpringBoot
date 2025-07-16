@@ -53,13 +53,11 @@ public class PaymentServiceImpl implements PaymentService {
            payment.setDescription("Payment for order " + paymentDto.getOrderId() + " confirmed." );
             payment.setStatus(PaymentStatus.COMPLETED);
             payment.setCurrency(paymentDto.getCurrency());
-            payment.setCreatedAt(LocalDateTime.now());
             payment.setPaymentMethodId(paymentDto.getPaymentMethodId());
 
             String PaymentId = stripeService.createPaymentStripe(payment);
             payment.setStripePaymentId(PaymentId);
 
-            kafkaTemplate.send(paymentCreateTopic, payment.getOrderId().toString(), payment.getStatus().toString());
 
             return paymentRepository.save(payment);
         }catch (HttpError e) {
@@ -80,7 +78,11 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setAmount(paymentDto.getTotal());
             payment.setStatus(PaymentStatus.PENDING);
 
-            return paymentRepository.save(payment);
+            Payment newPayment = paymentRepository.save(payment);
+
+            System.out.println("Payment created with ID: " + newPayment);
+
+            return newPayment;
         }catch (HttpError e){
             throw  e;
         }
