@@ -2,6 +2,7 @@ package com.food.authservice.services.impl;
 
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
+import com.food.authservice.domains.dtos.user.UserTokenDto;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
 import com.food.authservice.exceptions.HttpError;
@@ -11,6 +12,8 @@ import com.food.authservice.services.contract.UserService;
 import com.food.authservice.utils.JwtTools;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(RegisterDto registerDto) {
+    public void registerUser(RegisterDto registerDto) {
         try{
             User user = userRepository.findByEmailOrUsername(registerDto.getEmail(), registerDto.getUsername());
             if(user != null){
@@ -70,7 +73,7 @@ public class UserServiceImpl implements UserService {
             user = modelMapper.map(registerDto, User.class);
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
 
-            return userRepository.save(user);
+            userRepository.save(user);
         }catch (HttpError e) {
             throw e;
         }
@@ -116,6 +119,21 @@ public class UserServiceImpl implements UserService {
                     tokenRepository.save(t);
                 }
             });
+        }catch (HttpError e) {
+            throw e;
+        }
+    }
+
+    @Override
+    public UserTokenDto getAuthenticatedUser() {
+        try{
+            UserTokenDto user = (UserTokenDto) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            if(user == null) {
+                throw new HttpError(HttpStatus.UNAUTHORIZED, "User not authenticated");
+            }
+
+            return user;
         }catch (HttpError e) {
             throw e;
         }
