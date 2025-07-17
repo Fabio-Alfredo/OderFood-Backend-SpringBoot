@@ -9,7 +9,9 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTools {
@@ -50,12 +52,18 @@ public class JwtTools {
             JwtParser parser = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
                     .build();
-//            System.out.println("email"+getEmailFromToken(token));
+
             Claims claims = parser.parseSignedClaims(token).getPayload();
             UserDto userDto = new UserDto();
-            userDto.setEmail(claims.get("email", String.class));
-            userDto.setUsername(claims.get("username", String.class));
+            userDto.setEmail(claims.getSubject());
             userDto.setId(UUID.fromString(claims.get("id", String.class)));
+
+            List<String> roles = ((List<?>) claims.get("roles"))
+                    .stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+
+            userDto.setRoles(roles);
 
             return userDto ;
         }catch (Exception e) {

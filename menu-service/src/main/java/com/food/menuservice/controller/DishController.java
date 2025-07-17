@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class DishController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<GeneralResponse>createDish(@RequestBody @Valid CreateDishDto dishDto) {
         try{
             Dish dish = dishService.createDish(dishDto);

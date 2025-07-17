@@ -34,7 +34,7 @@ public class JwtFilterTools extends OncePerRequestFilter {
             try {
                 user = jwtTools.validateAndGetUserFromToken(token);
                 if(user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, null);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                     authToken.setDetails(
                             new WebAuthenticationDetailsSource().buildDetails(request)
                     );
