@@ -4,11 +4,13 @@ import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
 import com.food.authservice.domains.dtos.user.UserTokenDto;
 import com.food.authservice.domains.enums.TokenType;
+import com.food.authservice.domains.models.Role;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
 import com.food.authservice.exceptions.HttpError;
 import com.food.authservice.repositorie.TokenRepository;
 import com.food.authservice.repositorie.UserRepository;
+import com.food.authservice.services.contract.RoleService;
 import com.food.authservice.services.contract.UserService;
 import com.food.authservice.utils.JwtTools;
 import org.modelmapper.ModelMapper;
@@ -18,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -28,13 +32,15 @@ public class UserServiceImpl implements UserService {
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final RoleService roleService;
 
-    public UserServiceImpl(UserRepository userRepository, JwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, JwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService) {
         this.userRepository = userRepository;
         this.jwtTools = jwtTools;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
+        this.roleService = roleService;
     }
 
     @Override
@@ -71,9 +77,13 @@ public class UserServiceImpl implements UserService {
                 throw new HttpError(HttpStatus.BAD_REQUEST, "User already exists with email or username: " + registerDto.getEmail() + ", " + registerDto.getUsername());
             }
 
+            Role role = roleService.findById("ADMIN");
+
             user = modelMapper.map(registerDto, User.class);
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+            user.setRoles(List.of(role));
 
+            System.out.println(user);
             userRepository.save(user);
         }catch (HttpError e) {
             throw e;
@@ -90,6 +100,19 @@ public class UserServiceImpl implements UserService {
             Token token = registerToken(user);
 
             return token;
+        }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        try{
+            List<User> users = userRepository.findAll();
+            if(users.isEmpty())
+                throw new HttpError(HttpStatus.NOT_FOUND, "NOt users in services");
+
+            return users;
         }catch (HttpError e){
             throw e;
         }

@@ -24,10 +24,9 @@ public class JwtTools {
 
     public String generateToken(User user){
         Map<String, Object> claims = new HashMap<>();
-        claims.put("username", user.getUsername());
-        claims.put("email", user.getEmail());
         claims.put("id", user.getId());
-//        claims.put("roles", user.getRoles());
+        claims.put("roles", user.getRoles());
+
         return Jwts.builder()
                 .claims(claims)
                 .subject(user.getEmail())
@@ -66,22 +65,4 @@ public class JwtTools {
         }
     }
 
-//    public UserTokenDto getUserFromToken(String token){
-//        try{
-//            JwtParser parser = Jwts.parser()
-//                    .verifyWith(Keys.hmacShaKeyFor(secret_authentication.getBytes()))
-//                    .build();
-//
-//            Claims claims = parser.parseSignedClaims(token).getPayload();
-//            System.out.println(claims + " claims");
-//            UserTokenDto userTokenDto = new UserTokenDto();
-//            userTokenDto.setEmail(claims.get("email", String.class));
-//            userTokenDto.setUsername(claims.get("username", String.class));
-//            userTokenDto.setId(UUID.fromString(claims.get("id", String.class)));
-//
-//            return userTokenDto;
-//        }catch (Exception e) {
-//            return null;
-//        }
-//    }
 }

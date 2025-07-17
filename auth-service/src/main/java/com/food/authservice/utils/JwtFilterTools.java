@@ -53,7 +53,7 @@ public class JwtFilterTools extends OncePerRequestFilter {
             if(user!= null){
                 Boolean isValid = jwtTools.verifyToken(token);
                 if(isValid){
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, null);
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                      authToken.setDetails(
                              new WebAuthenticationDetailsSource().buildDetails(request)
                      );

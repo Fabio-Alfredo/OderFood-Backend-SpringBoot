@@ -6,11 +6,14 @@ import com.food.authservice.domains.dtos.user.UserTokenDto;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
 
+import java.util.List;
+
 public interface UserService {
     User findByIdentifier(String identifier);
     User findByEmail(String email);
     void registerUser(RegisterDto registerDto);
     Token loginUser(LoginDto loginDto);
+    List<User>findAllUsers();
 
 
     //metodos para manejo de tokens
