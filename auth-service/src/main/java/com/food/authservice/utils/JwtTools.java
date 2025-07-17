@@ -10,10 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 public class JwtTools {
@@ -25,7 +22,8 @@ public class JwtTools {
     public String generateToken(User user){
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
-        claims.put("roles", user.getRoles());
+        List<String>roles = user.getRoles().stream().map(role -> role.getId()).toList();
+        claims.put("roles", roles);
 
         return Jwts.builder()
                 .claims(claims)
