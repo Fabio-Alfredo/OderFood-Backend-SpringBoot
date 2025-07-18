@@ -1,9 +1,6 @@
 package com.food.authservice.utils;
 
-import com.food.authservice.domains.dtos.user.UserTokenDto;
-import com.food.authservice.domains.enums.TokenType;
 import com.food.authservice.domains.models.User;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -19,6 +16,11 @@ public class JwtTools {
     @Value("${jwt.expiration}")
     private Long expiration_authentication;
 
+    @Value("${recovery.token.expiration}")
+    private String secret_recovery;
+    @Value("${recovery.token.expiration}")
+    private Long expiration_recovery;
+
     public String generateToken(User user){
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
@@ -32,6 +34,47 @@ public class JwtTools {
                 .expiration(new Date(System.currentTimeMillis() + (expiration_authentication) * 1000L))
                 .signWith(Keys.hmacShaKeyFor( secret_authentication.getBytes()))
                 .compact();
+    }
+
+    public String generateRecoveryToken(User user){
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("Type", "recovery_password");
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(user.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis()+expiration_recovery *1000L))
+                .signWith(Keys.hmacShaKeyFor(secret_recovery.getBytes()))
+                .compact();
+    }
+
+    public Boolean verifyRecoveryToken(String token){
+        try{
+            JwtParser parser = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret_recovery.getBytes()))
+                    .build();
+
+            var claims = parser.parseSignedClaims(token).getPayload();
+            String type = claims.get("Type", String.class);
+
+            return "recovery_password".equals(type);
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    public String getEmailFromTokenRecovery(String token){
+        try{
+            JwtParser parser = Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret_recovery.getBytes()))
+                    .build();
+            return  parser.parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        }catch (Exception e){
+            return  null;
+        }
     }
 
 
