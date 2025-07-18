@@ -33,6 +33,10 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<Token> tokens;
 
+    @OneToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<PasswordRecoveryToken> tokens_recovery;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

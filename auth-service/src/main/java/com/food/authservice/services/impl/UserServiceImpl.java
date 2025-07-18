@@ -2,8 +2,6 @@ package com.food.authservice.services.impl;
 
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
-import com.food.authservice.domains.dtos.user.UserTokenDto;
-import com.food.authservice.domains.enums.TokenType;
 import com.food.authservice.domains.models.Role;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
@@ -12,29 +10,26 @@ import com.food.authservice.repositorie.TokenRepository;
 import com.food.authservice.repositorie.UserRepository;
 import com.food.authservice.services.contract.RoleService;
 import com.food.authservice.services.contract.UserService;
-import com.food.authservice.utils.JwtTools;
+import com.food.authservice.utils.AuthJwtTools;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final JwtTools jwtTools;
+    private final AuthJwtTools jwtTools;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final RoleService roleService;
 
-    public UserServiceImpl(UserRepository userRepository, JwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService) {
+    public UserServiceImpl(UserRepository userRepository, AuthJwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService) {
         this.userRepository = userRepository;
         this.jwtTools = jwtTools;
         this.tokenRepository = tokenRepository;

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 
 @Component
-public class JwtTools {
+public class AuthJwtTools {
     @Value("${jwt.secret}")
     private String secret_authentication;
     @Value("${jwt.expiration}")
@@ -35,48 +35,6 @@ public class JwtTools {
                 .signWith(Keys.hmacShaKeyFor( secret_authentication.getBytes()))
                 .compact();
     }
-
-    public String generateRecoveryToken(User user){
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Type", "recovery_password");
-
-        return Jwts.builder()
-                .claims(claims)
-                .subject(user.getEmail())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+expiration_recovery *1000L))
-                .signWith(Keys.hmacShaKeyFor(secret_recovery.getBytes()))
-                .compact();
-    }
-
-    public Boolean verifyRecoveryToken(String token){
-        try{
-            JwtParser parser = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret_recovery.getBytes()))
-                    .build();
-
-            var claims = parser.parseSignedClaims(token).getPayload();
-            String type = claims.get("Type", String.class);
-
-            return "recovery_password".equals(type);
-        }catch (Exception e){
-            return false;
-        }
-    }
-
-    public String getEmailFromTokenRecovery(String token){
-        try{
-            JwtParser parser = Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(secret_recovery.getBytes()))
-                    .build();
-            return  parser.parseSignedClaims(token)
-                    .getPayload()
-                    .getSubject();
-        }catch (Exception e){
-            return  null;
-        }
-    }
-
 
     public Boolean verifyToken(String token){
         try{

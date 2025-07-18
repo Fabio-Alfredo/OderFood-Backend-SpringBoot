@@ -1,6 +1,5 @@
 package com.food.authservice.utils;
 
-import com.food.authservice.domains.dtos.user.UserTokenDto;
 import com.food.authservice.domains.models.User;
 import com.food.authservice.services.contract.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -19,10 +18,10 @@ import java.io.IOException;
 
 @Component
 public class JwtFilterTools extends OncePerRequestFilter {
-    private final JwtTools jwtTools;
+    private final AuthJwtTools jwtTools;
     private final UserService userService;
 
-    public JwtFilterTools(UserService userService, JwtTools jwtTools, UserService userService1) {
+    public JwtFilterTools(UserService userService, AuthJwtTools jwtTools, UserService userService1) {
         this.jwtTools = jwtTools;
         this.userService = userService1;
     }
