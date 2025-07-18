@@ -2,6 +2,7 @@ package com.food.authservice.services.impl;
 
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
+import com.food.authservice.domains.models.PasswordRecoveryToken;
 import com.food.authservice.domains.models.Role;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.domains.models.User;
@@ -9,6 +10,7 @@ import com.food.authservice.exceptions.HttpError;
 import com.food.authservice.repositorie.TokenRepository;
 import com.food.authservice.repositorie.UserRepository;
 import com.food.authservice.services.contract.RoleService;
+import com.food.authservice.services.contract.TokenRecoveryServices;
 import com.food.authservice.services.contract.UserService;
 import com.food.authservice.utils.AuthJwtTools;
 import org.modelmapper.ModelMapper;
@@ -28,14 +30,16 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final RoleService roleService;
+    private final TokenRecoveryServices tokenRecoveryServices;
 
-    public UserServiceImpl(UserRepository userRepository, AuthJwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService) {
+    public UserServiceImpl(UserRepository userRepository, AuthJwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService, TokenRecoveryServices tokenRecoveryServices) {
         this.userRepository = userRepository;
         this.jwtTools = jwtTools;
         this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
         this.roleService = roleService;
+        this.tokenRecoveryServices = tokenRecoveryServices;
     }
 
     @Override
@@ -108,6 +112,18 @@ public class UserServiceImpl implements UserService {
                 throw new HttpError(HttpStatus.NOT_FOUND, "NOt users in services");
 
             return users;
+        }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
+    public PasswordRecoveryToken recoveryPassword(String email) {
+        try{
+            User user = findByEmail(email);
+            PasswordRecoveryToken token = tokenRecoveryServices.registerToken(user);
+
+            return token;
         }catch (HttpError e){
             throw e;
         }
