@@ -5,6 +5,7 @@ import com.food.authservice.domains.dtos.token.TokenDto;
 import com.food.authservice.domains.dtos.user.EmailDto;
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
+import com.food.authservice.domains.dtos.user.ResetPasswordDto;
 import com.food.authservice.domains.models.PasswordRecoveryToken;
 import com.food.authservice.domains.models.Token;
 import com.food.authservice.exceptions.HttpError;
@@ -46,8 +47,8 @@ public class AuthController {
         }
     }
 
-    @PutMapping("/recover-password")
-    public ResponseEntity<GeneralResponse>resetPassword(@RequestBody EmailDto email){
+    @PutMapping("/forgot-password")
+    public ResponseEntity<GeneralResponse>forgotPassword(@RequestBody EmailDto email){
         try{
 
             PasswordRecoveryToken token = userService.recoveryPassword(email.getEmail());
@@ -58,5 +59,16 @@ public class AuthController {
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
     }
+
+    @PutMapping("/reset-password")
+    public ResponseEntity<GeneralResponse>resetPassword(@RequestBody ResetPasswordDto resetPasswordDto){
+        try {
+            userService.resetPassword(resetPasswordDto);
+            return GeneralResponse.getResponse(HttpStatus.OK, "Recovery password success");
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
 
 }

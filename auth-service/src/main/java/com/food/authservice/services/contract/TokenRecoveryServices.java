@@ -5,5 +5,7 @@ import com.food.authservice.domains.models.User;
 
 public interface TokenRecoveryServices {
     PasswordRecoveryToken registerToken(User user);
+    String getEmailByToken(String token);
+    Boolean validTokenRecovery(User user, String token);
 }
 

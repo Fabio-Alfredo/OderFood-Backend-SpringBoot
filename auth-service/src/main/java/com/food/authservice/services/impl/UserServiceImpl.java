@@ -2,6 +2,7 @@ package com.food.authservice.services.impl;
 
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
+import com.food.authservice.domains.dtos.user.ResetPasswordDto;
 import com.food.authservice.domains.models.PasswordRecoveryToken;
 import com.food.authservice.domains.models.Role;
 import com.food.authservice.domains.models.Token;
@@ -123,6 +124,22 @@ public class UserServiceImpl implements UserService {
             PasswordRecoveryToken token = tokenRecoveryServices.registerToken(user);
 
             return token;
+        }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
+    public void resetPassword(ResetPasswordDto resetPasswordDto) {
+        try{
+            String email = tokenRecoveryServices.getEmailByToken(resetPasswordDto.getToken());
+            var user = findByEmail(email);
+            boolean isValid = tokenRecoveryServices.validTokenRecovery(user, resetPasswordDto.getToken());
+            if(!isValid)
+                throw new HttpError(HttpStatus.NOT_FOUND, "Token invalid o expired");
+
+            user.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));
+            userRepository.save(user);
         }catch (HttpError e){
             throw e;
         }

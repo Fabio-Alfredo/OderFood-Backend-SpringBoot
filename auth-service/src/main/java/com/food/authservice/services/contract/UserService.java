@@ -2,6 +2,7 @@ package com.food.authservice.services.contract;
 
 import com.food.authservice.domains.dtos.user.LoginDto;
 import com.food.authservice.domains.dtos.user.RegisterDto;
+import com.food.authservice.domains.dtos.user.ResetPasswordDto;
 import com.food.authservice.domains.dtos.user.UserTokenDto;
 import com.food.authservice.domains.models.PasswordRecoveryToken;
 import com.food.authservice.domains.models.Token;
@@ -18,6 +19,7 @@ public interface UserService {
 
     //Recovery password
     PasswordRecoveryToken recoveryPassword(String email);
+    void resetPassword(ResetPasswordDto resetPasswordDto);
 
 
     //metodos para manejo de tokens
