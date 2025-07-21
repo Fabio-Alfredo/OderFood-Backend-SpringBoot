@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerUser(RegisterDto registerDto) {
         try{
-            User user = userRepository.findByEmailOrUsername(registerDto.getEmail(), registerDto.getUsername());
+            var user = userRepository.findByEmailOrUsername(registerDto.getEmail(), registerDto.getUsername());
             if(user != null){
                 throw new HttpError(HttpStatus.BAD_REQUEST, "User already exists with email or username: " + registerDto.getEmail() + ", " + registerDto.getUsername());
             }
@@ -82,7 +82,6 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
             user.setRoles(List.of(role));
 
-            System.out.println(user);
             userRepository.save(user);
         }catch (HttpError e) {
             throw e;

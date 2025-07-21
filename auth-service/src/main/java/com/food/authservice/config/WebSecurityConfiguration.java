@@ -54,7 +54,7 @@ public class WebSecurityConfiguration {
         httpSecurity.httpBasic(withDefaults()).csrf(csrf-> csrf.disable());
 
         httpSecurity.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/**", "/api/auth/recover-password").permitAll()
                 .anyRequest().authenticated()
         );
 
