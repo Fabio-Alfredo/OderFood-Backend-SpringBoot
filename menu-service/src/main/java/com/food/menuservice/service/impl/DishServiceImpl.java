@@ -3,14 +3,17 @@ package com.food.menuservice.service.impl;
 import com.food.menuservice.Exception.HttpError;
 import com.food.menuservice.domain.dto.dish.CreateDishDto;
 import com.food.menuservice.domain.dto.dish.IdsDishesDto;
+import com.food.menuservice.domain.dto.dish.UpdateDishDto;
 import com.food.menuservice.domain.model.Dish;
 import com.food.menuservice.repository.DishRepository;
 import com.food.menuservice.service.contract.DishService;
+import jakarta.persistence.Id;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +56,8 @@ public class DishServiceImpl implements DishService {
         }
     }
 
+
+
     @Override
     public Dish findDishById(UUID id) {
         try{
@@ -77,4 +82,43 @@ public class DishServiceImpl implements DishService {
             throw e;
         }
     }
+
+    @Override
+    @Transactional(rollbackOn = {HttpError.class, Exception.class})
+    public Dish updateDish(UpdateDishDto dishDto, UUID IdDish) {
+        var dish = findDishById(IdDish);
+        updateFields(dish, dishDto);
+        return dishRepository.save(dish);
+    }
+
+    @Override
+    public List<Dish> findAllDishesAvailable() {
+        try{
+            List<Dish> dishes = dishRepository.findAllByAvailable(true);
+            if(dishes.isEmpty())
+                throw new HttpError(HttpStatus.NOT_FOUND, "There are no dishes available");
+
+            return dishes;
+        }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackOn = {HttpError.class, Exception.class})
+    public void deleteDish(UUID dish) {
+        try{
+            dishRepository.deleteById(dish);
+        }catch (HttpError e){
+            throw e;
+        }
+    }
+
+    private void updateFields(Dish dish, UpdateDishDto dto) {
+        if (dto.getName() != null) dish.setName(dto.getName());
+        if (dto.getDescription() != null) dish.setDescription(dto.getDescription());
+        if (dto.getPrice() != null) dish.setPrice(dto.getPrice());
+        if (dto.getAvailable() != null) dish.setAvailable(dto.getAvailable());
+    }
+
 }

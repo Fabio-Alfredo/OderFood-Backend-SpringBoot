@@ -15,6 +15,7 @@ import com.food.authservice.services.contract.TokenRecoveryServices;
 import com.food.authservice.services.contract.UserService;
 import com.food.authservice.utils.AuthJwtTools;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,9 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final RoleService roleService;
     private final TokenRecoveryServices tokenRecoveryServices;
+
+    @Value("${app.default.role}")
+    private String default_role;
 
     public UserServiceImpl(UserRepository userRepository, AuthJwtTools jwtTools, TokenRepository tokenRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper, RoleService roleService, TokenRecoveryServices tokenRecoveryServices) {
         this.userRepository = userRepository;
@@ -77,7 +81,7 @@ public class UserServiceImpl implements UserService {
                 throw new HttpError(HttpStatus.BAD_REQUEST, "User already exists with email or username: " + registerDto.getEmail() + ", " + registerDto.getUsername());
             }
 
-            Role role = roleService.findById("ADMIN");
+            Role role = roleService.findById(default_role);
 
             user = modelMapper.map(registerDto, User.class);
             user.setPassword(passwordEncoder.encode(registerDto.getPassword()));

@@ -2,6 +2,7 @@ package com.food.menuservice.service.contract;
 
 import com.food.menuservice.domain.dto.dish.CreateDishDto;
 import com.food.menuservice.domain.dto.dish.IdsDishesDto;
+import com.food.menuservice.domain.dto.dish.UpdateDishDto;
 import com.food.menuservice.domain.model.Dish;
 
 import java.util.List;
@@ -12,4 +13,8 @@ public interface DishService {
     List<Dish>findAllDish();
     Dish findDishById(UUID id);
     List<Dish>findAllByIds(IdsDishesDto idsDishesDto);
+    Dish updateDish(UpdateDishDto dishDto, UUID IdDish);
+    List<Dish>findAllDishesAvailable();
+    void deleteDish(UUID dish);
+
 }

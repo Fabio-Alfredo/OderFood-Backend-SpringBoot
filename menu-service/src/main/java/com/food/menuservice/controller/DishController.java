@@ -4,6 +4,7 @@ import com.food.menuservice.Exception.HttpError;
 import com.food.menuservice.domain.GeneralResponse;
 import com.food.menuservice.domain.dto.dish.CreateDishDto;
 import com.food.menuservice.domain.dto.dish.IdsDishesDto;
+import com.food.menuservice.domain.dto.dish.UpdateDishDto;
 import com.food.menuservice.domain.model.Dish;
 import com.food.menuservice.service.contract.DishService;
 import jakarta.validation.Valid;
@@ -40,10 +41,21 @@ public class DishController {
     }
 
     @GetMapping("/findAll")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<GeneralResponse>findAllDishes(){
         try{
             List<Dish>dishes = dishService.findAllDish();
             return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dishes);
+        }catch (HttpError e){
+            return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @GetMapping("/find-all-available")
+    public ResponseEntity<GeneralResponse>findAllDishesAvailable(){
+        try{
+            List<Dish>dishes = dishService.findAllDishesAvailable();
+            return GeneralResponse.getResponse(HttpStatus.ACCEPTED,"All dishes", dishes);
         }catch (HttpError e){
             return GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
@@ -67,6 +79,28 @@ public class DishController {
         try {
             Dish dish = dishService.findDishById(id);
             return GeneralResponse.getResponse(HttpStatus.ACCEPTED, dish);
+        }catch (HttpError e){
+            return  GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @PutMapping("/update-dish/{dishId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<GeneralResponse>updateOneDish(@PathVariable UUID dishId, @RequestBody UpdateDishDto dishDto){
+        try{
+            Dish dish = dishService.updateDish(dishDto, dishId);
+            return GeneralResponse.getResponse(HttpStatus.ACCEPTED,"Updated dish", dish);
+        }catch (HttpError e){
+            return  GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
+        }
+    }
+
+    @PutMapping("/delete-dish/{dishId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public ResponseEntity<GeneralResponse>deleteOneDish(@PathVariable UUID dishId){
+        try{
+            dishService.deleteDish( dishId);
+            return GeneralResponse.getResponse(HttpStatus.ACCEPTED,"Deleted dish");
         }catch (HttpError e){
             return  GeneralResponse.getResponse(e.getHttpStatus(), e.getMessage());
         }
